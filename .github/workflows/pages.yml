@@ -3,7 +3,7 @@ name: 部署「温」到 GitHub Pages
 on:
   push:
     branches:
-      - arena/01a0786f-wen-companion
+      - main
   workflow_dispatch:
 
 permissions:
