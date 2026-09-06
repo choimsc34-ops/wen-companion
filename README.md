@@ -1,64 +1,85 @@
-# 温 · 陪伴 Web App
+# 温 · 陪伴 App
 
-一个移动优先的陪伴聊天网页。打开就能用，不需要先配置任何东西。
+一个移动优先的陪伴聊天网页。**打开就能用，不需要配置任何东西。**
 
-## 直接开始
+---
+
+## 三种用法，挑一个
+
+### 1️⃣ 最简单：下载单文件（推荐先试这个）
+
+下载 **[`温.html`](温.html)** 这一个文件，双击用浏览器打开就行。
+
+- 不需要装任何东西，不需要联网也能开
+- 整个 App 就在这一个文件里，可以拷到 U 盘、发给自己、随便放
+- 记录存在浏览器里，下次打开还在
+
+### 2️⃣ 手机上天天用：开 GitHub Pages（点 4 下，永久免费）
+
+1. 打开 <https://github.com/choimsc34-ops/wen-companion/settings/pages>
+2. **Source** 选 `Deploy from a branch`
+3. **Branch** 选 `arena/01a0786f-wen-companion`，右边文件夹选 **`/docs`**
+4. 点 **Save**，等 1 分钟
+
+然后手机浏览器打开 `https://choimsc34-ops.github.io/wen-companion/`
+→ 菜单里选「添加到主屏幕」→ 桌面上就有一个「温」的图标，跟正经 App 一样。
+
+### 3️⃣ 想让 Key 留在服务器上：跑 Node 版
 
 ```bash
 npm install
-npm start
+npm start          # 打开 http://localhost:3000
 ```
 
-浏览器打开 `http://localhost:3000` 就行。
+这个版本 API Key 存在服务器的 `data/config.json`，聊天记录也存服务器，换设备打开还在。
 
-第一次打开是**体验模式**：不需要 API Key，温也会回你话（本地脚本，保持人设）。
-想要真正的 GPT，点右上角「⋮」→ 填入 OpenAI API Key → 保存并连接。
-Key 只写在服务器上的 `data/config.json`，不会出现在网页代码里，也不会再传回浏览器。
+---
 
-也可以走环境变量（服务器部署时更合适）：复制 `.env.example` 为 `.env` 再填。
+## 关于 API Key
+
+**不填也能用。** 没有 Key 时是「体验模式」，温会用内置的话回你，界面和流程完全一样。
+
+想要真正的 GPT：点右上角 **⋮** → 粘贴 OpenAI API Key → 保存并连接。
+
+- 单文件版 / Pages 版：Key 只存在**你自己这台设备的浏览器**里，不上传任何服务器，直接连 OpenAI
+- Node 版：Key 存在**你自己的服务器**上，网页代码里看不到
+
+> ⚠️ 单文件版和 Pages 版的 Key 存在浏览器 localStorage 里。自己一个人用没问题，别在公用电脑上填，也别把填过 Key 的文件发给别人。
+
+---
 
 ## 功能
 
 - 微信式聊天界面，回复**逐字流式输出**
-- 「温」的人格提示词，短句、真人感
+- 「温」的人格：成熟、稳定、短句、真人感
 - **温的日记**：根据当天聊天生成第一人称日记，可翻看往期
 - **我的日记**：边写边自动保存，可翻看往期
-- 聊天记录和日记存在服务器 `data/store.json`，换设备打开还在
 - 按真实日期分隔聊天记录（今天／昨天／具体日期）
-- 网页内切换 API Key 和模型，不用重启
-- 完整 PWA：可装到手机桌面，离线也能打开界面
+- 一键导出全部记录备份成 JSON
+- PWA：可装到手机桌面，离线也能打开
+
+---
 
 ## 目录结构
 
 ```
-server.mjs          Express 服务 + 全部接口
+温.html             单文件版（自动生成，别手改）
+build-single.mjs    生成单文件版：node build-single.mjs
+
+docs/               纯前端版，GitHub Pages 就指这里
+  index.html  app.js  styles.css  sw.js  manifest.json  icons/
+
+server.mjs          Node 版服务
 src/persona.mjs     温的人格提示词
-src/store.mjs       JSON 持久化（聊天、日记、配置）
-src/demo.mjs        体验模式的本地回复引擎
-public/             前端（index.html / app.js / styles.css / sw.js / icons）
-data/               运行时生成，已 gitignore（含 API Key，别提交）
+src/store.mjs       服务端持久化
+src/demo.mjs        体验模式回复引擎
+public/             Node 版前端
+data/               运行时生成，已 gitignore（含 Key，别提交）
 ```
 
-## 接口
+改了 `docs/` 里的东西之后，跑一下 `node build-single.mjs` 重新生成 `温.html`。
 
-| 方法 | 路径 | 说明 |
-|---|---|---|
-| GET | `/api/status` | 当前模式、模型 |
-| POST | `/api/settings` | 保存并验证 API Key、模型 |
-| DELETE | `/api/settings` | 断开，回到体验模式 |
-| GET | `/api/models` | 账号可用模型列表 |
-| GET | `/api/history` | 聊天记录 + 两本日记 |
-| DELETE | `/api/history` | 清空聊天记录 |
-| POST | `/api/chat` | 发消息，SSE 流式返回 |
-| POST | `/api/diary/wen` | 生成某天温的日记 |
-| PUT | `/api/diary/my` | 保存某天我的日记 |
-
-## 部署到手机随时能用
-
-项目是标准的 Node 服务，任何支持 Node 18+ 的平台都能跑（Railway、Render、Fly.io、自己的 VPS 都行）。
-部署后把域名在手机浏览器打开，「添加到主屏幕」，就是一个独立 App。
-
-注意：`data/` 是本地文件存储。用容器化平台部署时要挂一个持久卷，否则重启会丢数据。
+---
 
 ## 还可以做
 
@@ -66,4 +87,4 @@ data/               运行时生成，已 gitignore（含 API Key，别提交）
 - 主动消息 / 推送通知
 - 语音输入和语音回复
 - 聊天记录搜索
-- 多用户登录与私密数据保护
+- 云端同步，换手机记录还在
