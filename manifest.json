@@ -1,0 +1,9 @@
+{
+  "name":"温",
+  "short_name":"温",
+  "start_url":"/",
+  "display":"standalone",
+  "background_color":"#ededed",
+  "theme_color":"#f7f7f7",
+  "icons":[]
+}
