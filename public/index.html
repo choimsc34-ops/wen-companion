@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#ededed">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="温">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="stylesheet" href="/styles.css">
+<title>温</title>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="avatar">温</div>
+    <div class="who">
+      <div class="name">温</div>
+      <div class="status" id="status">连接中…</div>
+    </div>
+    <button class="icon-btn" id="settingsBtn" aria-label="设置">
+      <svg viewBox="0 0 24 24" width="21" height="21"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></svg>
+    </button>
+  </header>
+
+  <!-- 聊天 -->
+  <main id="view-chat" class="view active">
+    <div id="chat" class="chat"></div>
+  </main>
+
+  <!-- 温的日记 -->
+  <main id="view-wen" class="view">
+    <div class="diary">
+      <div class="datenav">
+        <button class="navbtn" data-nav="wen" data-dir="-1">‹</button>
+        <span id="wenDate">—</span>
+        <button class="navbtn" data-nav="wen" data-dir="1">›</button>
+      </div>
+      <div class="card">
+        <h2>温的日记</h2>
+        <div id="wenEntry" class="entry empty">这一天还没写。</div>
+        <div class="actions">
+          <button id="writeWenBtn" class="primary">让温写这天的日记</button>
+        </div>
+      </div>
+      <p class="hint">日记会根据当天的聊天内容生成，写完自动保存在这台服务器上。</p>
+    </div>
+  </main>
+
+  <!-- 我的日记 -->
+  <main id="view-my" class="view">
+    <div class="diary">
+      <div class="datenav">
+        <button class="navbtn" data-nav="my" data-dir="-1">‹</button>
+        <span id="myDate">—</span>
+        <button class="navbtn" data-nav="my" data-dir="1">›</button>
+      </div>
+      <div class="card">
+        <h2>我的日记</h2>
+        <textarea id="myDiaryBox" class="diarybox" placeholder="今天想写点什么？"></textarea>
+        <div class="actions">
+          <span class="savehint" id="saveHint"></span>
+        </div>
+      </div>
+      <p class="hint">写完自动保存，不用点按钮。</p>
+    </div>
+  </main>
+
+  <!-- 输入栏 -->
+  <div id="compose" class="compose">
+    <textarea id="input" rows="1" placeholder="发消息…" enterkeyhint="send"></textarea>
+    <button id="sendBtn" class="send" aria-label="发送">
+      <svg viewBox="0 0 24 24" width="19" height="19"><path d="M3 20.5 21 12 3 3.5l3.6 8.5L3 20.5Z"/></svg>
+    </button>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab on" data-tab="chat">
+      <svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-5A8 8 0 1 1 21 12Z"/></svg>
+      <span>聊天</span>
+    </button>
+    <button class="tab" data-tab="wen">
+      <svg viewBox="0 0 24 24"><path d="M5 3h11l3 3v15H5V3Z"/><path d="M8.5 9.5h7M8.5 13h7M8.5 16.5h4"/></svg>
+      <span>温的日记</span>
+    </button>
+    <button class="tab" data-tab="my">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v18H6.5A2.5 2.5 0 0 1 4 19.5Z"/><path d="M8 3v18"/></svg>
+      <span>我的日记</span>
+    </button>
+  </nav>
+</div>
+
+<!-- 设置面板 -->
+<div id="sheetMask" class="mask" hidden></div>
+<section id="sheet" class="sheet" hidden aria-label="设置">
+  <div class="grabber"></div>
+  <h3>设置</h3>
+
+  <div class="row-status">
+    <span id="modeBadge" class="badge">—</span>
+    <span id="modeDesc" class="muted"></span>
+  </div>
+
+  <div id="keyBlock">
+    <label class="lbl" for="apiKey">OpenAI API Key</label>
+    <input id="apiKey" type="password" placeholder="sk-…" autocomplete="off" spellcheck="false">
+    <p class="muted small">只保存在你自己的服务器上，不会出现在网页代码里，也不会再传回浏览器。</p>
+
+    <label class="lbl" for="modelSel">模型</label>
+    <div class="modelrow">
+      <input id="modelInput" list="modelList" placeholder="gpt-5.6-terra" autocomplete="off" spellcheck="false">
+      <datalist id="modelList"></datalist>
+    </div>
+
+    <div class="sheet-actions">
+      <button id="saveKeyBtn" class="primary">保存并连接</button>
+      <button id="clearKeyBtn" class="ghost">断开</button>
+    </div>
+    <p id="sheetMsg" class="msg"></p>
+  </div>
+
+  <hr>
+
+  <button id="installBtn" class="ghost wide" hidden>把「温」装到手机桌面</button>
+  <button id="clearChatBtn" class="danger wide">清空聊天记录</button>
+  <button id="closeSheet" class="ghost wide">关闭</button>
+</section>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
